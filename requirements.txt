@@ -11,7 +11,6 @@ chardet==4.0.0
 charset-normalizer==2.0.12
 click==8.0.4
 coreferee==1.0.1
-coreferee-model-en @ https://github.com/msg-systems/coreferee/raw/master/models/coreferee_model_en.zip
 cryptography==36.0.1
 cycler==0.11.0
 cymem==2.0.6
