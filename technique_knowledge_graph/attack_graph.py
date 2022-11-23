@@ -143,19 +143,23 @@ class AttackGraph:
                                    node_shape=node_shape_dict[label],
                                    nodelist=[node for node in filter(lambda n: self.attackNode_dict[n].type == label, self.attackgraph_nx.nodes)],
                                    # nodelist=[node.id for node in filter(lambda n: n.type == label, self.attackNode_dict.values())],
-                                   node_size=100,
+                                   # node_size=100,
+                                   node_size=6000,
                                    alpha=0.6)
         nx.draw_networkx_labels(self.attackgraph_nx,
                                 graph_pos,
                                 labels={node: str(self.attackNode_dict[node]) for node in self.attackgraph_nx.nodes},
-                                verticalalignment='top',
-                                horizontalalignment='left',
-                                font_size=6)
-        nx.draw_networkx_edges(self.attackgraph_nx, graph_pos)
+                                # verticalalignment='top',
+                                # horizontalalignment='left',
+                                verticalalignment='center',
+                                horizontalalignment='center',
+                                # font_size=6)
+                                font_size=30)
+        nx.draw_networkx_edges(self.attackgraph_nx, graph_pos, node_size=6000,arrowsize=50)
         nx.draw_networkx_edge_labels(self.attackgraph_nx,
                                      graph_pos,
                                      edge_labels=nx.get_edge_attributes(self.attackgraph_nx, 'action'),
-                                     font_size=6)
+                                     font_size=100)
 
         if image_path == "":
             plt.show()
