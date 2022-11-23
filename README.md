@@ -15,6 +15,8 @@ Running :
 python main.py -M attackGraphGeneration -R "./Dataset/Evaluation/Frankenstein Campaign.txt" -O ./output.pdf
 # Identifing techniques in CTI report
 python main.py -M techniqueIdentification -T ./templates -R "./Dataset/Evaluation/Frankenstein Campaign.txt" -O ./output.pdf
+python main.py -M technpip iqueIdentification -T ./templates -R "./Dataset/Evaluation/Frankenstein Campaign.txt" -O ./output.pdf
+
 ```
 
 Running - Archive-v0.1 (Archive-v0.1 is the experimental version without clear code structure and comments):
