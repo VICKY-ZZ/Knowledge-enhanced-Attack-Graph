@@ -9,11 +9,12 @@ import simplejson as json
 
 class TemplateNode(AttackGraphNode):
     instance_count: int
-
+    # 将AttackGraphNode变为TemplateNode
     def __init__(self, attack_node: AttackGraphNode):
         if attack_node is None:
             self.instance_count = 0
             self.type = ""
+            # nlp为entity_text
             self.nlp = []
             self.ioc = []
         else:
@@ -31,7 +32,9 @@ class TemplateNode(AttackGraphNode):
     NODE_IOC_SIMILAR_ACCEPT_THRESHOLD = 0.8
 
     def update_with(self, attack_node: AttackGraphNode) -> TemplateNode:
+        # instance数量加1，即该node又多融合了一个Instance
         self.instance_count += 1
+        # 融合结点
         self.merge_node(attack_node)
         return self
 
@@ -77,17 +80,20 @@ class TechniqueTemplate:
 
     def update_template(self, attack_graph: AttackGraph):
         logging.info("---technique template: Update template!---")
-
+        # 总实例数+1
         self.total_instance_count += 1
         sample_node_template_node_dict = {}
 
         # node matching
+        # 查看sample图中的node，进行匹配与更新
         for node in attack_graph.attackgraph_nx.nodes:
             max_similarity_score = 0
             most_similar_node_index = -1
 
             node_index = 0
+            # 遍历template中的technique_node技术结点
             for template_node in self.technique_node_list:
+                # 对每一个新的节点node，与原有图中节点template_node进行相似度比对,找到相似度最大的，记录索引和分之
                 similarity_score = template_node.get_similarity(attack_graph.attackNode_dict[node])
                 if similarity_score > max_similarity_score:
                     max_similarity_score = similarity_score
@@ -96,25 +102,33 @@ class TechniqueTemplate:
                 node_index += 1
 
             # whether node in new sample is aligned with exist template node
+            # 如果新的node的相似度分数大于THRESHOLD,则将其加入sample_node_template_dict（单独针对每个新的template为update template创立）
+            # 并用该节点将与其最相似的老节点更新
+            # 具体similar算法，和更新方法？
             if max_similarity_score > self.NODE_SIMILAR_ACCEPT_THRESHOLD:
                 sample_node_template_node_dict[node] = most_similar_node_index
                 self.technique_node_list[most_similar_node_index].update_with(attack_graph.attackNode_dict[node])
             else:
+                # 如果不大于，则直接加入technique_node_list，作为新的节点
                 tn = TemplateNode(attack_graph.attackNode_dict[node])
                 self.technique_node_list.append(tn)
+                # 设置index
                 sample_node_template_node_dict[node] = len(self.technique_node_list) - 1
 
         instance = []
+        # 查看sample图中的edge，进行匹配与更新
         for edge in attack_graph.attackgraph_nx.edges:
+            # 得到现在图里面的边，后面做的是结点index的转换（由原来图，换位现在结点匹配更新后新生成的图的index）
             technique_template_edge = (sample_node_template_node_dict[edge[0]], sample_node_template_node_dict[edge[1]])
-
+            # 查看原来的template是否包含该边
             if technique_template_edge in self.technique_edge_dict.keys():
                 self.technique_edge_dict[technique_template_edge] += 1
             else:
                 self.technique_edge_dict[technique_template_edge] = 1
-
+            # 将边加入到instance中,所以instance就是现有边的集合
             instance.append(technique_template_edge)
-
+        # 统计现有边的情况，记入technique_instance_dict,初始化时和原有edge_list相同，不知后续有什么变化？
+        # 感觉是用的例子的数目，通过边的数目来记录，历史上一共有多少次这样的边
         instance = tuple(instance)
         if instance in self.technique_instance_dict.keys():
             self.technique_instance_dict[instance] += 1

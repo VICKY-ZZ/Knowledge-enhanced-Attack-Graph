@@ -128,11 +128,12 @@ class MitreGraphReader:
 
     def get_super_sub_technique_dict(self):
         super_sub_technique_dict = {}
-
+        # 总之,放入两种:单纯的单一technique,或者自身为super,邻居为sub,放邻居编号
         for n in self.mitre_graph.nodes():
+            # 如果某个节点是technique就加入
             if self.mitre_graph.nodes[n]["types"] == "technique":
                 super_sub_technique_dict[n] = [n]
-
+# 如果不是,就看他是不是super;如果是的话,就看它的邻居节点是不是sub_technique,如果是,就将其邻居的节点号加入字典
             elif self.mitre_graph.nodes[n]["types"] == "super_technique":
                 super_sub_technique_dict[n] = []
                 for m in self.mitre_graph.neighbors(n):
@@ -149,11 +150,19 @@ class MitreGraphReader:
             if self.mitre_graph.nodes[n]["types"] == "tactic":
                 return(n)
 
+    # input:technique_id
+    # output:
+    # function:
     def find_examples_for_technique(self, technique_id: str) -> list:
         example_list = []
-
+# 找邻居
         for n in self.mitre_graph.neighbors(technique_id):
+            # 如果邻居的types为example，
             if self.mitre_graph.nodes[n]["types"] == "examples":
+                # re.sub用于替换字符串中的匹配项。
+                # 看了一下,examples后面都是这样的形式，如下，所以要替换。
+                # label "APT28 has performed large-scale scans in an attempt to find vulnerable servers.[2]"
+                # 这些examples是什么呢?
                 n = re.sub("\[[0-9]+\]+", "", n)
                 example_list.append(n)
 

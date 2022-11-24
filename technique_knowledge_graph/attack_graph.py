@@ -57,6 +57,7 @@ def get_stringSet_similarity(set_m: Set[str], set_n: Set[str]) -> float:
     max_similarity = 0.0
     for m in set_m:
         for n in set_n:
+            # 对比每个元素的相似度，找到最大的
             similarity = get_string_similarity(m, n)
             max_similarity = max_similarity if max_similarity > similarity else similarity
     return max_similarity
@@ -64,6 +65,7 @@ def get_stringSet_similarity(set_m: Set[str], set_n: Set[str]) -> float:
 
 # https://blog.csdn.net/dcrmg/article/details/79228589
 def get_string_similarity(a: str, b: str) -> float:
+    # 计算莱文斯坦比
     similarity_score = Levenshtein.ratio(a, b)
     return similarity_score
 
@@ -96,11 +98,14 @@ class AttackGraphNode:
     def get_similarity(self, node: AttackGraphNode) -> float:  # Todo
         similarity = 0.0
         if self.type == node.type:
+            # 如果结点type相同，则加0.4分
             similarity += 0.4
+            # 对比ioc和nlp（实体名称）部分的相似度，取最大值
         similarity += max(get_stringSet_similarity(self.ioc, node.ioc), get_stringSet_similarity(self.nlp, node.nlp))
         return similarity
 
     def merge_node(self, node: AttackGraphNode):
+        # 字典取并集
         self.nlp |= node.nlp
         self.ioc |= node.ioc
 
@@ -129,6 +134,8 @@ class AttackGraph:
         self.techniques = {}
 
         self.generate()
+        # 输入：文本
+        # 实例化后便生成一个文本分析好的图？
 
     # http://sparkandshine.net/en/networkx-application-notes-a-better-way-to-visualize-graphs/
     # https://networkx.org/documentation/latest/auto_examples/drawing/plot_chess_masters.html#sphx-glr-auto-examples-drawing-plot-chess-masters-py

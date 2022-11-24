@@ -140,9 +140,10 @@ class IoCNer:
 
 
 def parsingModel_training(traingSet_path: str):
+    # 加入了Regex-based NER Pipe和coreferee pipe
     ner_model = IoCNer("en_core_web_sm")
     # ner_model = IoCNer("en_core_web_trf")
-
+#输入数据
     labeled_data = read_labeled_data(traingSet_path)
     spacy_data = ner_model.convert_data_format(labeled_data)
     ner_model.train_model(spacy_data)
